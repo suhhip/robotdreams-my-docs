@@ -43,6 +43,7 @@ const config = {
       ({
         docs: {
           sidebarPath: './sidebars.js',
+          docItemComponent: '@theme/ApiItem',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           // editUrl: 'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
@@ -68,6 +69,29 @@ const config = {
     ],
   ],
 
+
+  plugins: [
+    [
+      'docusaurus-plugin-openapi-docs',
+      {
+        id: 'openapi',
+        docsPluginId: 'classic',
+        config: {
+          homework: {
+            specPath: 'static/openapi/homework-api.yaml',
+            outputDir: 'docs/homework',
+            sidebarOptions: {
+              groupPathsBy: 'tag',
+            },
+            downloadUrl: '/openapi/homework-api.yaml',
+          },
+        },
+      },
+    ]
+  ],
+
+  themes: ['docusaurus-theme-openapi-docs'],
+
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
@@ -90,6 +114,12 @@ const config = {
             type: 'docSidebar',
             sidebarId: 'guideSidebar',
             label: 'Guides',
+            position: 'left',
+          },
+          {
+            type: 'docSidebar',
+            sidebarId: 'homeworkApiSidebar',
+            label: 'Homework API',
             position: 'left',
           },
           {to: '/blog', label: 'Blog', position: 'left'},
