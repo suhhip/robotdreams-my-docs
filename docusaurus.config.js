@@ -73,6 +73,20 @@ const config = {
   plugins: [
     [
       'docusaurus-plugin-openapi-docs',
+      {
+        id: 'openapi',
+        docsPluginId: 'classic',
+        config: {
+          homework: {
+            specPath: 'static/openapi/homework-api.yaml',
+            outputDir: 'docs/homework',
+            sidebarOptions: {
+              groupPathsBy: 'tag',
+            },
+            downloadUrl: '/openapi/homework-api.yaml',
+          },
+        },
+      },
     ]
   ],
 
@@ -100,6 +114,12 @@ const config = {
             type: 'docSidebar',
             sidebarId: 'guideSidebar',
             label: 'Guides',
+            position: 'left',
+          },
+          {
+            type: 'docSidebar',
+            sidebarId: 'homeworkApiSidebar',
+            label: 'Homework API',
             position: 'left',
           },
           {to: '/blog', label: 'Blog', position: 'left'},

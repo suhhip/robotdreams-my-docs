@@ -1,0 +1,218 @@
+openapi: 3.0.4
+info:
+  title: Eszköz nyilvántartó API
+  description: Egy fiktív eszköz nyilvántartó rendszer API végpontjai
+  version: 1.0.0
+  contact:
+    name: Peter Suhajda
+    email: suhi@infinite.ad
+
+servers:
+  - url: https://api.eszkoznyilvantarto.hu/v1
+    description: Termelési környezet
+  - url: https://dev.eszkoznyilvantarto.hu/v1
+    description: Fejlesztői környezet
+
+tags:
+  - name: Eszköz
+    description: Eszköz entitást érintő API végpontok
+
+paths:
+  /eszkozok:
+    post:
+      summary: Új eszköz létrehozása
+      description: Létrehoz egy új eszközt a rendszerben a megadott adatokkal
+      tags:
+        - Eszköz
+      operationId: createDevice
+      requestBody:
+        $ref: '#/components/requestBodies/EszkozLetrehozas'
+      responses:
+        '201':
+          description: Sikeres létrehozás
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Eszkoz'
+        '400':
+          $ref: '#/components/responses/Http400'
+    get:
+      summary: Eszközök listázása
+      description: Az összes eszköz listázása, opcionális szűrési paraméterekkel
+      tags:
+        - Eszköz
+      operationId: getDevices
+      parameters:
+        - name: tipus
+          in: query
+          description: Szűrés eszköz típusra
+          required: false
+          schema:
+            type: string
+        - name: gyarto
+          in: query
+          description: Szűrés gyártóra
+          required: false
+          schema:
+            type: string
+        - name: raktaron
+          in: query
+          description: Csak raktáron lévő (true) vagy csak raktáron nem lévő (false) eszközök listázása
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Sikeres lekérdezés
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Eszkoz'
+  /eszkozok/{eszkozId}:
+    get:
+      summary: Egy konkrét eszköz lekérdezése
+      description: Egy eszköz adatainak lekérdezése azonosító alapján
+      tags:
+        - Eszköz
+      operationId: getDevice
+      parameters:
+        - name: eszkozId
+          in: path
+          description: A lekérdezendő eszköz azonosítója
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Sikeres lekérdezés
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Eszkoz'
+        '404':
+          $ref: '#/components/responses/Http404'
+
+components:
+  schemas:
+    HibaValasz:
+      type: object
+      required:
+        - hibaKod
+        - hibaUzenet
+      properties:
+        hibaKod:
+          type: integer
+          format: int32
+          description: Hibakód
+          example: 400
+        hibaUzenet:
+          type: string
+          description: Hibaüzenet
+          example: Hiányzó kötelező mező
+    Eszkoz:
+      type: object
+      required:
+        - id
+        - nev
+        - gyarto
+        - tipus
+        - raktaron
+        - utolsoFrissites
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Az eszköz egyedi azonosítója
+          example: f0d25c16-32ad-4d56-82f3-21c1d75bc27b
+          readOnly: true
+        nev:
+          type: string
+          description: Az eszköz neve
+          example: Szuperokos Kütyü
+        gyarto:
+          type: string
+          description: Az eszköz gyártója
+          example: Gyártó Kft.
+        tipus:
+          type: string
+          description: Az eszköz típusa
+          example: Okosotthon
+        ar:
+          type: number
+          format: double
+          description: Az eszköz ára
+          example: 150.99
+        raktaron:
+          type: boolean
+          description: Jelzi, hogy az eszköz raktáron van-e
+          example: true
+        utolsoFrissites:
+          type: string
+          format: date-time
+          description: Az utolsó frissítés időpontja
+          example: 2025-05-01T10:00:00Z
+          readOnly: true
+
+  requestBodies:
+    EszkozLetrehozas:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - nev
+              - gyarto
+              - tipus
+              - raktaron
+            properties:
+              nev:
+                type: string
+                description: Az eszköz neve
+                example: Szuperokos Kütyü
+              gyarto:
+                type: string
+                description: Az eszköz gyártója
+                example: Gyártó Kft.
+              tipus:
+                type: string
+                description: Az eszköz típusa
+                example: Okosotthon
+              ar:
+                type: number
+                format: double
+                description: Az eszköz ára
+                example: 150.99
+              raktaron:
+                type: boolean
+                description: Jelzi, hogy az eszköz raktáron van-e
+                example: true
+
+  responses:
+    Http400:
+      description: Hibás kérés (pl. hiányzó kötelező mező)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HibaValasz'
+          examples:
+            hianyzoMezo:
+              summary: Hiányzó kötelező mező
+              value:
+                hibaKod: 400
+                hibaUzenet: "A 'nev' mező megadása kötelező."
+    Http404:
+      description: A kért elem, vagy elérési útvonal nem található
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HibaValasz'
+          examples:
+            eszkozNemLetezik:
+              summary: Nem létező eszköz
+              value:
+                hibaKod: 404
+                hibaUzenet: "A megadott azonosítóval nem található eszköz: {eszkozId}"
