@@ -43,6 +43,7 @@ const config = {
       ({
         docs: {
           sidebarPath: './sidebars.js',
+          docItemComponent: '@theme/ApiItem',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           // editUrl: 'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
@@ -67,6 +68,15 @@ const config = {
       }),
     ],
   ],
+
+
+  plugins: [
+    [
+      'docusaurus-plugin-openapi-docs',
+    ]
+  ],
+
+  themes: ['docusaurus-theme-openapi-docs'],
 
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
