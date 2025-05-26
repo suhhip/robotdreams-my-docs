@@ -16,3 +16,9 @@ Ebben a dokumentumban megtalálod a szoftver telepítésének lépéseit.
 ## Telepítés
 
 Kövesd az alábbi lépéseket a telepítéshez.
+
+1. Telepítsd a projektfüggőségeket.
+
+```bash
+npm install
+```
